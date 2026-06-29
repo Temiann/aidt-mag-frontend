@@ -1,0 +1,576 @@
+/* =============================================================
+   Личный кабинет магистранта — таблица стилей (ПЗ-2)
+   Структура файла:
+     1. micro-reset
+     2. дизайн-токены: primitive / semantic / component
+     3. тёмная тема (переопределение семантического слоя)
+     4. системная тема (prefers-color-scheme)
+     5. стили компонентов дашборда
+   Значения примитивов взяты из макета Figma dashboard-student-light.
+   ============================================================= */
+
+/* ===== micro-reset =================================================
+   Минимальный осознанный сброс. Сторонние reset-таблицы не подключаются. */
+
+/* Единая блочная модель: width/height включают padding и border */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Снимаем внешние отступы по умолчанию у корпуса и заголовков */
+body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
+
+/* Списки без маркеров и без левого отступа — раскладку задаём сами */
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+/* Адаптивные изображения */
+img { max-width: 100%; height: auto; display: block; }
+
+/* Элементы форм наследуют шрифт документа, а не свой агентский */
+input, button, textarea, select { font: inherit; color: inherit; }
+
+/* Базовая типографика; конкретный font-size задаётся на <body> ниже */
+body { font-family: "Golos Text", system-ui, "Segoe UI", sans-serif; line-height: 1.5; }
+
+
+/* ===== ДИЗАЙН-ТОКЕНЫ ============================================== */
+:root {
+
+  /* === primitive ===
+     «Сырые» значения. Имя описывает значение, а не роль применения. */
+
+  /* нейтральная (серая) шкала */
+  --white:    #FFFFFF;
+  --gray-50:  #F4F5F8;   /* подложка страницы */
+  --gray-100: #ECEEF2;   /* границы, приглушённый фон */
+  --gray-200: #D9DDE3;
+  --gray-400: #9AA0A8;
+  --gray-500: #6B7077;   /* приглушённый текст */
+  --gray-700: #4A4F57;
+  --gray-800: #24272D;
+  --gray-900: #1A1D21;   /* основной текст */
+  --gray-950: #121417;
+
+  /* фиолетовая (фирменная) шкала */
+  --violet-100: #EFEAFE; /* мягкий фон акцента */
+  --violet-300: #B9A6F6;
+  --violet-600: #6940EE; /* основной акцент */
+  --violet-700: #5429D9;
+
+  /* статусные шкалы */
+  --blue-100:  #E5EDFD;
+  --blue-300:  #7AA7F7;
+  --blue-500:  #2D6FF0;
+  --blue-700:  #1D4FB8;
+  --green-100: #DCFCE7;
+  --green-400: #4ADE80;
+  --green-500: #16A34A;
+  --green-700: #15803D;
+  --amber-100: #FEF3C7;
+  --amber-500: #D97706;
+  --amber-700: #B45309;
+  --red-500:   #EF4444;
+
+  /* шкала отступов (4-8-12-16-24-32) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* шкала скруглений */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   14px;
+  --radius-pill: 999px;
+
+  /* шкала типографических размеров */
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-md: 16px;
+  --font-lg: 20px;
+  --font-xl: 28px;
+
+
+  /* === semantic ===
+     Роль значения в интерфейсе. Ссылается только на примитивы. */
+
+  --color-bg-page:    var(--gray-50);
+  --color-bg-surface: var(--white);
+  --color-bg-muted:   var(--gray-100);
+
+  --color-text-primary:   var(--gray-900);
+  --color-text-secondary: var(--gray-700);
+  --color-text-muted:     var(--gray-500);
+  --color-on-accent:      var(--white);
+
+  --color-border:     var(--gray-100);
+  --color-link:       var(--violet-600);
+  --color-link-hover: var(--violet-700);
+
+  --color-accent:      var(--violet-600);
+  --color-accent-soft: var(--violet-100);
+
+  --color-status-success:      var(--green-700);
+  --color-status-success-soft: var(--green-100);
+  --color-status-warning:      var(--amber-700);
+  --color-status-warning-soft: var(--amber-100);
+  --color-status-danger:       var(--red-500);
+  --color-status-info:         var(--blue-700);
+  --color-status-info-soft:    var(--blue-100);
+
+  --space-card-padding: var(--space-6);
+  --space-section-gap:  var(--space-6);
+
+
+  /* === component ===
+     Токены конкретных компонентов. Ссылаются на семантический слой. */
+
+  --button-bg:        var(--color-bg-page);
+  --button-bg-hover:  var(--color-bg-muted);
+  --button-text:      var(--color-text-primary);
+  --button-padding-y: var(--space-2);
+  --button-padding-x: var(--space-3);
+
+  --card-bg:      var(--color-bg-surface);
+  --card-border:  var(--color-border);
+  --card-radius:  var(--radius-lg);
+  --card-padding: var(--space-card-padding);
+
+  --metric-value-color: var(--color-text-primary);
+
+  --badge-bg:   var(--color-status-danger);
+  --badge-text: var(--color-on-accent);
+}
+
+
+/* ===== ТЁМНАЯ ТЕМА ===============================================
+   Переопределяем ТОЛЬКО семантический слой. Компонентные токены
+   ссылаются на семантику и подхватят изменения автоматически.
+   Примитивная шкала не дублируется — она одна на обе темы.
+   Селектор :root[data-theme="dark"] имеет специфичность выше :root. */
+:root[data-theme="dark"] {
+  --color-bg-page:    var(--gray-950);
+  --color-bg-surface: var(--gray-900);
+  --color-bg-muted:   var(--gray-800);
+
+  --color-text-primary:   var(--gray-50);
+  --color-text-secondary: var(--gray-200);
+  --color-text-muted:     var(--gray-400);
+
+  --color-border:     var(--gray-800);
+  --color-link:       var(--violet-300);
+  --color-link-hover: var(--violet-100);
+
+  --color-accent:      var(--violet-600);
+  --color-accent-soft: var(--gray-800);
+
+  /* статусные роли остаются общими — палитра статусов одна на обе темы,
+     но в тёмной теме осветляем текст и гасим мягкие фоны, чтобы не светились */
+  --color-status-success:      var(--green-400);
+  --color-status-success-soft: var(--gray-800);
+  --color-status-warning:      var(--amber-500);
+  --color-status-warning-soft: var(--gray-800);
+  --color-status-info:         var(--blue-300);
+  --color-status-info-soft:    var(--gray-800);
+}
+
+
+/* ===== СИСТЕМНАЯ ТЕМА ============================================
+   Срабатывает только пока пользователь не выбрал тему явно
+   (:root:not([data-theme])). После выбора атрибут data-theme
+   появляется — и медиа-запрос перестаёт действовать. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg-page:    var(--gray-950);
+    --color-bg-surface: var(--gray-900);
+    --color-bg-muted:   var(--gray-800);
+
+    --color-text-primary:   var(--gray-50);
+    --color-text-secondary: var(--gray-200);
+    --color-text-muted:     var(--gray-400);
+
+    --color-border:     var(--gray-800);
+    --color-link:       var(--violet-300);
+    --color-link-hover: var(--violet-100);
+
+    --color-accent:      var(--violet-600);
+    --color-accent-soft: var(--gray-800);
+
+    --color-status-success:      var(--green-400);
+    --color-status-success-soft: var(--gray-800);
+    --color-status-warning:      var(--amber-500);
+    --color-status-warning-soft: var(--gray-800);
+    --color-status-info:         var(--blue-300);
+    --color-status-info-soft:    var(--gray-800);
+  }
+}
+
+
+/* ===== УТИЛИТЫ ==================================================== */
+
+/* доступное скрытие: элемент есть для скринридера, но не виден */
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* плейсхолдер иконок: нейтральный чип на месте будущих SVG-иконок набора */
+.icon {
+  display: inline-block;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  flex: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-muted);
+}
+
+
+/* ===== КАРКАС СТРАНИЦЫ (CSS Grid) ================================ */
+body {
+  font-size: var(--font-md);
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100dvh;
+}
+
+.app-header   { grid-column: 1 / -1; }              /* шапка на всю ширину */
+.sidebar      { grid-column: 1; grid-row: 2; }       /* сайдбар слева */
+.main-content { grid-column: 2; grid-row: 2; min-width: 0; } /* контент справа */
+
+
+/* ===== ШАПКА ===================================================== */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-8);
+  background: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+.logo-mark {
+  inline-size: var(--space-8);
+  block-size: var(--space-8);
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+}
+.logo-name { font-size: var(--font-sm); font-weight: 600; }
+
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  max-width: 65ch;
+}
+.header-search input {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+}
+.header-search input::placeholder { color: var(--color-text-muted); }
+.search-hint {
+  display: flex;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+}
+kbd {
+  padding: 0 var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-muted);
+  font-family: inherit;
+  font-size: var(--font-xs);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+
+/* ===== КНОПКИ ==================================================== */
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--button-padding-y) var(--button-padding-x);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--button-bg);
+  color: var(--button-text);
+  cursor: pointer;
+}
+button:hover { background: var(--button-bg-hover); }
+button:focus-visible { outline: 2px solid var(--color-link); outline-offset: 2px; }
+
+/* модификатор основной кнопки: локально переопределяет токены кнопки,
+   не дублируя правило button */
+.button--primary {
+  --button-bg: var(--color-accent);
+  --button-bg-hover: var(--color-link-hover);
+  --button-text: var(--color-on-accent);
+}
+
+/* красный бейдж счётчика уведомлений */
+.badge {
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: var(--font-xs);
+  font-weight: 600;
+}
+
+/* аватар профиля */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-link);
+  font-size: var(--font-sm);
+  font-weight: 600;
+}
+
+
+/* ===== САЙДБАР =================================================== */
+.sidebar {
+  background: var(--color-bg-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-6) var(--space-2);
+}
+.sidebar ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid transparent;   /* резерв под активное состояние */
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+.sidebar a:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+/* активный пункт: мягкий акцентный фон + левая полоса акцентом */
+.sidebar a[aria-current="page"] {
+  background: var(--color-accent-soft);
+  color: var(--color-link);
+  border-left: 3px solid var(--color-accent);
+}
+
+
+/* ===== ОБЛАСТЬ КОНТЕНТА ========================================= */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section-gap);
+  padding: var(--space-8) var(--space-8) var(--space-8) var(--space-8);
+  background: var(--color-bg-page);
+}
+
+/* хлебные крошки */
+.breadcrumbs ol {
+  display: flex;
+  gap: var(--space-2);
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+}
+.breadcrumbs a { color: var(--color-text-muted); text-decoration: none; }
+.breadcrumbs a:hover { color: var(--color-link); }
+
+/* заголовки */
+h1 {
+  font-size: clamp(var(--font-lg), 4vw, var(--font-xl));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+h2 { font-size: var(--font-lg); font-weight: 600; }
+h3 { font-size: var(--font-md); font-weight: 600; }
+
+.subheader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+}
+
+
+/* ===== КАРТОЧКИ И СЕКЦИИ ========================================= */
+.card-kpi,
+.card-schedule,
+.card-progress,
+.card-deadlines,
+.card-notifications {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+}
+
+/* ряд KPI: четыре карточки, сжимается на узких экранах */
+.kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--space-4);
+}
+.card-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.metric {
+  font-size: var(--font-xl);
+  font-weight: 600;
+  color: var(--metric-value-color);
+}
+.metric-caption { color: var(--color-text-muted); font-size: var(--font-sm); }
+
+/* секции-карточки: заголовок + содержимое в столбик */
+.card-schedule,
+.card-progress,
+.card-deadlines,
+.card-notifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* расписание на сегодня */
+.card-schedule ol { display: flex; flex-direction: column; gap: var(--space-3); }
+.card-schedule li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.card-schedule li:last-child { padding-bottom: 0; border-bottom: 0; }
+.card-schedule time {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.lesson-title { flex: 1; font-weight: 600; }
+.lesson-place { color: var(--color-text-muted); font-size: var(--font-sm); }
+
+/* метка-статус занятия */
+.tag {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  font-size: var(--font-xs);
+  white-space: nowrap;
+}
+.tag--practice { background: var(--color-status-info-soft);    color: var(--color-status-info); }
+.tag--lab      { background: var(--color-accent-soft);         color: var(--color-link); }
+.tag--seminar  { background: var(--color-status-success-soft); color: var(--color-status-success); }
+
+/* прогресс по курсам */
+.card-progress ul { display: flex; flex-direction: column; gap: var(--space-3); }
+.card-progress li { display: flex; align-items: center; gap: var(--space-4); }
+.course-name { flex: 0 0 40%; }
+.card-progress meter {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  block-size: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-muted);
+}
+.card-progress meter::-webkit-meter-bar {
+  background: var(--color-bg-muted);
+  border: 0;
+  border-radius: var(--radius-pill);
+}
+.card-progress meter::-webkit-meter-optimum-value {
+  background: var(--color-accent);
+  border-radius: var(--radius-pill);
+}
+.card-progress meter::-moz-meter-bar {
+  background: var(--color-accent);
+  border-radius: var(--radius-pill);
+}
+
+/* ближайшие дедлайны */
+.card-deadlines ol { display: flex; flex-direction: column; gap: var(--space-3); }
+.card-deadlines li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.task-title { flex: 1; font-weight: 600; }
+.task-course { color: var(--color-text-muted); font-size: var(--font-sm); }
+.card-deadlines time {
+  margin-left: auto;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-status-warning-soft);
+  color: var(--color-status-warning);
+  font-size: var(--font-xs);
+  white-space: nowrap;
+}
+
+/* уведомления */
+.card-notifications ul { display: flex; flex-direction: column; gap: var(--space-3); }
+.card-notifications li { display: flex; align-items: center; gap: var(--space-2); }
+.unread-dot {
+  inline-size: var(--space-2);
+  block-size: var(--space-2);
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+}
+.note-text { flex: 1; max-width: 65ch; }
+.card-notifications time { color: var(--color-text-muted); font-size: var(--font-sm); }
+.card-notifications > a {
+  align-self: flex-start;
+  color: var(--color-link);
+  font-size: var(--font-sm);
+  text-decoration: none;
+}
+.card-notifications > a:hover { color: var(--color-link-hover); }
+
+
+/* ===== УЗКИЕ ЭКРАНЫ ============================================== */
+@media (max-width: 600px) {
+  body { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
+  .sidebar { grid-column: 1; grid-row: 2; border-right: 0; border-bottom: 1px solid var(--color-border); }
+  .sidebar ul { flex-direction: row; flex-wrap: wrap; }
+  .main-content { grid-column: 1; grid-row: 3; padding: var(--space-4); }
+}
