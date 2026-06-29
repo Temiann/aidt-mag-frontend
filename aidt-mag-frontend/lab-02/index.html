@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Синхронное чтение сохранённой темы ДО отрисовки: предотвращает
+       «вспышку» неправильной темы (FART). Без defer/async. -->
+  <script>
+    const saved = localStorage.getItem('theme');
+    if (saved) document.documentElement.dataset.theme = saved;
+  </script>
+
+  <title>Дашборд — Личный кабинет магистранта ВГТУ</title>
+  <meta name="description" content="Дашборд личного кабинета магистранта ВГТУ: средний балл, расписание на сегодня, прогресс по дисциплинам и ближайшие дедлайны.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- app-header -->
+  <header class="app-header">
+    <a href="/" class="logo">
+      <span class="logo-mark" aria-hidden="true"></span>
+      <span class="logo-name">Кафедра ИИ и ЦТ · ВГТУ</span>
+    </a>
+
+    <form role="search" class="header-search">
+      <label for="search" class="visually-hidden">Поиск</label>
+      <input type="search" id="search" name="search"
+             placeholder="Поиск по курсам, заданиям, людям">
+      <span class="search-hint"><kbd>Ctrl</kbd>+<kbd>K</kbd> / <kbd>Cmd</kbd>+<kbd>K</kbd></span>
+    </form>
+
+    <div class="header-actions">
+      <button type="button" class="theme-toggle" aria-label="Переключить тему">
+        <span class="icon" data-icon="sun-moon" aria-hidden="true"></span>
+      </button>
+      <button type="button" aria-label="Уведомления">
+        <span class="icon" data-icon="bell" aria-hidden="true"></span>
+        <span class="badge">3</span>
+      </button>
+      <button type="button" aria-label="Меню профиля" aria-haspopup="menu">
+        <span class="avatar" aria-hidden="true">ИИ</span>
+        <span class="icon" data-icon="chevron-down" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- sidebar: единственная навигация уровня приложения -->
+  <aside class="sidebar">
+    <nav aria-label="Основная навигация">
+      <ul>
+        <li>
+          <a href="/" class="nav-home" aria-current="page">
+            <span class="icon" data-icon="layout-dashboard" aria-hidden="true"></span>
+            <span>Дашборд</span>
+          </a>
+        </li>
+        <li>
+          <a href="/profile" class="nav-profile">
+            <span class="icon" data-icon="user" aria-hidden="true"></span>
+            <span>Профиль</span>
+          </a>
+        </li>
+        <li>
+          <a href="/portfolio" class="nav-portfolio">
+            <span class="icon" data-icon="briefcase" aria-hidden="true"></span>
+            <span>Портфолио</span>
+          </a>
+        </li>
+        <li>
+          <a href="/messages" class="nav-messages">
+            <span class="icon" data-icon="message-square" aria-hidden="true"></span>
+            <span>Сообщения</span>
+          </a>
+        </li>
+        <li>
+          <a href="/programs" class="nav-programs">
+            <span class="icon" data-icon="graduation-cap" aria-hidden="true"></span>
+            <span>Программы</span>
+          </a>
+        </li>
+        <li>
+          <a href="/schedule" class="nav-schedule">
+            <span class="icon" data-icon="calendar" aria-hidden="true"></span>
+            <span>Расписание</span>
+          </a>
+        </li>
+        <li>
+          <a href="/directory" class="nav-reference">
+            <span class="icon" data-icon="library" aria-hidden="true"></span>
+            <span>Справочник</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- main-content -->
+  <main class="main-content">
+
+    <nav aria-label="Хлебные крошки" class="breadcrumbs">
+      <ol>
+        <li><a href="/">Главная</a></li>
+        <li aria-current="page">Дашборд</li>
+      </ol>
+    </nav>
+
+    <h1>Добро пожаловать, Иван</h1>
+    <p class="subheader">
+      <time datetime="2026-04-24">24 апреля 2026 г.</time>
+      <small>2-й семестр магистратуры</small>
+    </p>
+
+    <!-- KPI: заголовок секции визуально скрыт классом visually-hidden -->
+    <section aria-labelledby="kpi-title" class="kpi">
+      <h2 id="kpi-title" class="visually-hidden">Ключевые показатели</h2>
+      <article class="card-kpi">
+        <h3>Средний балл</h3>
+        <span class="icon" data-icon="star" aria-hidden="true"></span>
+        <p class="metric"><strong>4,6</strong></p>
+        <p class="metric-caption">+0,2 к прошлому семестру</p>
+      </article>
+      <article class="card-kpi">
+        <h3>Активные курсы</h3>
+        <span class="icon" data-icon="book-open" aria-hidden="true"></span>
+        <p class="metric"><strong>6</strong></p>
+        <p class="metric-caption">5 — осн., 1 — по выбору</p>
+      </article>
+      <article class="card-kpi">
+        <h3>Сдано заданий</h3>
+        <span class="icon" data-icon="check-circle" aria-hidden="true"></span>
+        <p class="metric"><strong>24 / 30</strong></p>
+        <p class="metric-caption">80 % от плана</p>
+      </article>
+      <article class="card-kpi">
+        <h3>Ближайший дедлайн</h3>
+        <span class="icon" data-icon="clock" aria-hidden="true"></span>
+        <p class="metric"><strong>3 дня</strong></p>
+        <p class="metric-caption">Лаб. 1 по Веб-интерфейсам</p>
+      </article>
+    </section>
+
+    <!-- card-schedule -->
+    <section class="card-schedule">
+      <h2>Расписание на сегодня</h2>
+      <ol>
+        <li>
+          <time datetime="2026-04-24T09:00">09:00</time>
+          <span class="lesson-title">Архитектура информационных систем</span>
+          <small class="lesson-place">ауд. 312 · Петров П. П.</small>
+          <span class="tag tag--lecture">Лекция</span>
+        </li>
+        <li>
+          <time datetime="2026-04-24T10:45">10:45</time>
+          <span class="lesson-title">Базы данных</span>
+          <small class="lesson-place">ауд. 415 · Смирнова О. А.</small>
+          <span class="tag tag--practice">Практика</span>
+        </li>
+        <li>
+          <time datetime="2026-04-24T13:40">13:40</time>
+          <span class="lesson-title">Разработка пользовательских веб-интерфейсов</span>
+          <small class="lesson-place">комп. 102 · Рындин Н. А.</small>
+          <span class="tag tag--lab">Лаб. работа</span>
+        </li>
+        <li>
+          <time datetime="2026-04-24T15:20">15:20</time>
+          <span class="lesson-title">Философия науки</span>
+          <small class="lesson-place">ауд. 208 · Орлова Т. И.</small>
+          <span class="tag tag--seminar">Семинар</span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- card-progress -->
+    <section class="card-progress">
+      <h2>Прогресс по курсам</h2>
+      <ul>
+        <li>
+          <span class="course-name">Архитектура ИС</span>
+          <meter min="0" max="100" value="65">65 %</meter>
+        </li>
+        <li>
+          <span class="course-name">Базы данных</span>
+          <meter min="0" max="100" value="40">40 %</meter>
+        </li>
+        <li>
+          <span class="course-name">Веб-интерфейсы</span>
+          <meter min="0" max="100" value="80">80 %</meter>
+        </li>
+        <li>
+          <span class="course-name">Методы оптимизации</span>
+          <meter min="0" max="100" value="30">30 %</meter>
+        </li>
+        <li>
+          <span class="course-name">Тестирование ПО</span>
+          <meter min="0" max="100" value="55">55 %</meter>
+        </li>
+        <li>
+          <span class="course-name">Философия науки</span>
+          <meter min="0" max="100" value="90">90 %</meter>
+        </li>
+      </ul>
+    </section>
+
+    <!-- card-deadlines -->
+    <section class="card-deadlines">
+      <h2>Ближайшие дедлайны</h2>
+      <ol>
+        <li>
+          <span class="task-title">Лаб. 1 — Семантическая разметка</span>
+          <small class="task-course">Веб-интерфейсы</small>
+          <time datetime="2026-04-27">через 3 дня</time>
+        </li>
+        <li>
+          <span class="task-title">Расчётное задание — Нормализация</span>
+          <small class="task-course">Базы данных</small>
+          <time datetime="2026-04-30">через 6 дней</time>
+        </li>
+        <li>
+          <span class="task-title">Реферат — Паттерны архитектуры</span>
+          <small class="task-course">Архитектура ИС</small>
+          <time datetime="2026-05-06">через 12 дней</time>
+        </li>
+      </ol>
+    </section>
+
+    <!-- card-notifications -->
+    <section class="card-notifications">
+      <h2>Уведомления</h2>
+      <ul>
+        <li>
+          <span class="unread-dot" aria-hidden="true"></span>
+          <span class="note-text">Перенос лекции «Методы оптимизации» на 28 апреля</span>
+          <time datetime="2026-04-24">2 часа назад</time>
+        </li>
+        <li>
+          <span class="unread-dot" aria-hidden="true"></span>
+          <span class="note-text">Результаты промежуточной аттестации опубликованы</span>
+          <time datetime="2026-04-23T18:04">вчера, 18:04</time>
+        </li>
+        <li>
+          <span class="unread-dot" aria-hidden="true"></span>
+          <span class="note-text">Реферат по «Архитектуре ИС» возвращён на доработку</span>
+          <time datetime="2026-04-20T12:41">20 апр, 12:41</time>
+        </li>
+      </ul>
+      <a href="/notifications">Все уведомления</a>
+    </section>
+
+  </main>
+
+  <!-- переключение темы вручную -->
+  <script src="theme.js"></script>
+</body>
+</html>
